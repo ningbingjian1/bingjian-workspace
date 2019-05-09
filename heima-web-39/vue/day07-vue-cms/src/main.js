@@ -8,7 +8,8 @@ Vue.use(VueRouter)
 import VueResource from 'vue-resource'
 // 2.2 安装 vue-resource
 Vue.use(VueResource)
-
+// 设置请求的根路径
+Vue.http.options.root = 'http://www.escook.cn:3000/';
 // 导入 MUI 的样式
 import './lib/mui/css/mui.min.css'
 // 导入扩展图标样式
