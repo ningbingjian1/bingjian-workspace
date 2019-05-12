@@ -1256,7 +1256,7 @@ HomeContainer.vue
 
 # 绘制 图片列表 组件页面结构并美化样式
 
-1. 制作 顶部的滑动条
+## 制作 顶部的滑动条
 
 使用mui的tab-top-webview-main.html
 
@@ -1287,6 +1287,711 @@ HomeContainer.vue
 
 			</div>
 ```
+
+这时候还不能滑动，需要引入初始化scroll的代码
+
+PhotoList.vue引入mui的 mui.js 文件:
+
+```
+// 1. 导入 mui 的js文件
+import mui from "../../lib/mui/js/mui.min.js";
+
+```
+
+
+在PhotoList.vue中初始化滑动组件:
+
+```
+  mui('.mui-scroll-wrapper').scroll({
+    deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+  });
+```
+
+
+这时候出现了严格模式不能使用mui的错误:
+
+这是mui.js文件的原因,错误如下
+
+```
+Uncaught TypeError: 'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them
+
+```
+
+解决办法:
+
+解决方案：
+ 1. 把 mui.js 中的 非严格 模式的代码改掉；但是不现实； 
+ 2. 把 webpack 打包时候的严格模式禁用掉；
+  + 最终，我们选择了 plan B  移除严格模式： 使用这个插件 
+
+```
+npm install babel-plugin-transform-remove-strict-mode
+```
+
+.babelrc 文件添加配置
+
+```
+{
+    "plugins": ["transform-remove-strict-mode"]
+}
+
+```
+
+
+
+警告处理
+
+```
+[Intervention] Unable to preventDefault inside passive event listener due to target being treated as passive. See <URL>
+```
+
+解决办法:
+
+```
+* {
+  touch-action: pan-y;
+}
+
+```
+
+刚进页面不能滑动的解决办法:
+在mounted的时候初始化滑动组件
+```
+ mounted() {
+    // 当 组件中的DOM结构被渲染好并放到页面中后，会执行这个 钩子函数
+    // 如果要操作元素了，最好在 mounted 里面，因为，这里时候的 DOM 元素 是最新的
+    // 2. 初始化滑动控件
+    mui(".mui-scroll-wrapper").scroll({
+      deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+    });
+  },
+```
+
+### 引入mui.js之后tabar不能切换的解决办法
+
+当 滑动条 调试OK后，发现， tabbar 无法正常工作了，这时候，我们需要把 每个 tabbar 按钮的 样式中  `mui-tab-item` 重新改一下名字；
+
+App.vue中的
+
+```
+ <!-- 底部 Tabbar 区域 -->
+    <nav class="mui-bar mui-bar-tab">
+			<router-link class="mui-tab-item" to="/home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</router-link>
+			<router-link class="mui-tab-item" to="/member">
+				<span class="mui-icon mui-icon-contact"></span>
+				<span class="mui-tab-label">会员</span>
+			</router-link>
+			<router-link class="mui-tab-item" to="/shopcar">
+				<span class="mui-icon mui-icon-extra mui-icon-extra-cart">
+					<span class="mui-badge">0</span>
+				</span>
+				<span class="mui-tab-label">购物车</span>
+			</router-link>
+			<router-link class="mui-tab-item" to="/search">
+				<span class="mui-icon mui-icon-search"></span>
+				<span class="mui-tab-label">搜索</span>
+			</router-link>
+		</nav>
+```
+这里的mui-tab-item样式冲突，我们需要修改它的名字
+
+
+首先是新名字的样式:
+app.vue
+
+```
+// 该类名，解决 tabbar 点击无法切换的问题
+.mui-bar-tab .mui-tab-item-llb.mui-active {
+    color: #007aff;
+}
+
+.mui-bar-tab .mui-tab-item-llb {
+    display: table-cell;
+    overflow: hidden;
+    width: 1%;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #929292;
+}
+
+.mui-bar-tab .mui-tab-item-llb .mui-icon {
+    top: 3px;
+    width: 24px;
+    height: 24px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.mui-bar-tab .mui-tab-item-llb .mui-icon~.mui-tab-label {
+    font-size: 11px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+```
+
+然后修改对应名字
+```
+ <!-- 底部 Tabbar 区域 -->
+    <nav class="mui-bar mui-bar-tab">
+			<router-link class="mui-tab-item-llb" to="/home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</router-link>
+			<router-link class="mui-tab-item-llb" to="/member">
+				<span class="mui-icon mui-icon-contact"></span>
+				<span class="mui-tab-label">会员</span>
+			</router-link>
+			<router-link class="mui-tab-item-llb" to="/shopcar">
+				<span class="mui-icon mui-icon-extra mui-icon-extra-cart">
+					<span class="mui-badge">0</span>
+				</span>
+				<span class="mui-tab-label">购物车</span>
+			</router-link>
+			<router-link class="mui-tab-item-llb" to="/search">
+				<span class="mui-icon mui-icon-search"></span>
+				<span class="mui-tab-label">搜索</span>
+			</router-link>
+		</nav>
+
+```
+
+这个时候的效果如图:
+
+![](./img/12.png)
+
+并且底部按钮也能切换了
+
+ ### 获取所有分类，并渲染 分类列表；
+
+ 在HhotoList.vue中的script中
+
+
+ 添加data:
+
+```
+ data() {
+    return {
+      cates: [], // 所有分类的列表数组
+      list: [] // 图片列表的数组
+    };
+  },
+```
+
+cates就是保存图片分类数据
+
+ 添加method:
+```
+ getAllCategory() {
+      // 获取所有的图片分类
+      this.$http.get("api/getimgcategory").then(result => {
+        if (result.body.status === 0) {
+          // 手动拼接出一个最完整的 分类列表
+          result.body.message.unshift({ title: "全部", id: 0 });
+          this.cates = result.body.message;
+        }
+      });
+    },
+```
+
+created时候调用:
+
+```
+ created() {
+    this.getAllCategory();
+  },
+```
+
+PhotoList.vue 模板渲染返回的分类数据
+
+```
+	<div id="slider" class="mui-slider">
+		<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+			<div class="mui-scroll">
+				  <a :class="['mui-control-item', item.id == 0 ? 'mui-active' : '']" v-for="item in cates" :key="item.id" @tap="getPhotoListByCateId(item.id)">
+           			 {{ item.title }}
+         		 </a>
+			</div>
+		</div>
+	</div>
+```
+
+<font color=red>
+注意这里绑定的class属性:
+:class="['mui-control-item', item.id == 0 ? 'mui-active' : '']"
+默认情况刚进入该页面的时候 第一个全部的链接激活状态，其他分类链接点击的时候调用的是mui自己的激活功能来修改样式的
+</font>
+
+
+
+
+### 制作图片列表区域
+1. 图片列表需要使用懒加载技术，我们可以使用 Mint-UI 提供的现成的 组件 `lazy-load`
+2. 根据`lazy-load`的使用文档，尝试使用
+3. 渲染图片列表数据
+
+
+需要注意的是使用lazy-load需要全部引入mint-ui，像之前的按需引入的代码都需要注释掉
+
+原来在main.js按需引入mint-ui
+```
+import { Header, Swipe, SwipeItem, Button } from 'mint-ui'
+Vue.component(Header.name, Header)
+Vue.component(Swipe.name, Swipe)
+Vue.component(SwipeItem.name, SwipeItem)
+Vue.component(Button.name, Button)
+```
+
+修改成全部引入,不然图片懒加载有问题:
+
+
+```
+import MintUI from 'mint-ui'
+Vue.use(MintUI)
+import 'mint-ui/lib/style.css'
+```
+
+
+PhotoList.vue中编写图片列表显示的html:
+
+首先官网提供使用实例本来就很简单:
+
+
+```
+<ul>
+  <li v-for="item in list">
+    <img v-lazy="item">
+  </li>
+</ul>
+
+image[lazy=loading] {
+  width: 40px;
+  height: 300px;
+  margin: auto;
+}
+```
+
+
+所以我们先调用API获取每个分类的图片列表数据
+
+
+
+```
+getPhotoListByCateId(cateId) {
+      	// 根据 分类Id，获取图片列表
+			this.$http.get("api/getimages/" + cateId).then(result => {
+				if (result.body.status === 0) {
+				this.list = result.body.message;
+				}
+			});
+		}
+```
+
+
+```
+created() {
+    	this.getAllCategory();
+    	// 默认进入页面，就主动请求 所有图片列表的数据
+		this.getPhotoListByCateId(0);
+		 // 默认进入页面，就主动请求 所有图片列表的数据
+    	this.getPhotoListByCateId(0);
+  	},
+```
+
+```
+data() {
+		return {
+		cates: [], // 所有分类的列表数组
+		list: [] // 图片列表的数组
+		};
+	  },
+```
+
+
+在分类中添加点击事件:
+
+
+```
+	  <a :class="['mui-control-item', item.id == 0 ? 'mui-active' : '']" v-for="item in cates" :key="item.id" @tap="getPhotoListByCateId(item.id)">
+           			 {{ item.title }}
+         		 </a>
+
+
+```
+
+
+@tap就是我们的事件
+
+
+
+在html循坏遍历图片列表:
+
+```
+<!-- 图片列表区域 -->
+    <ul class="photo-list">
+      <router-link v-for="item in list" :key="item.id" :to="'/home/photoinfo/' + item.id" tag="li">
+        <img v-lazy="item.img_url">
+        <div class="info">
+          <h1 class="info-title">{{ item.title }}</h1>
+          <div class="info-body">{{ item.zhaiyao }}</div>
+        </div>
+      </router-link>
+    </ul>
+```
+
+图片列表渲染出来之后需要调整样式，完整的样式如下:
+
+```
+<style lang="scss" scoped>
+* {
+  touch-action: pan-y;
+}
+
+.photo-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  padding-bottom: 0;
+  li {
+    background-color: #ccc;
+    text-align: center;
+    margin-bottom: 10px;
+    box-shadow: 0 0 9px #999;
+    position: relative;
+    img {
+      width: 100%;
+      vertical-align: middle;
+    }
+    img[lazy="loading"] {
+      width: 40px;
+      height: 300px;
+      margin: auto;
+    }
+
+    .info {
+      color: white;
+      text-align: left;
+      position: absolute;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      max-height: 84px;
+      .info-title {
+        font-size: 14px;
+      }
+      .info-body {
+        font-size: 13px;
+      }
+    }
+  }
+}
+</style>
+```
+
+样式说明:
+
+
+
+
+最后还有一个问题：在把内容网上滑动的时候发现图片分类哪一栏的分类链接会浮动到头部前面
+
+![](./img/14.png)
+
+这个时候需要修改app.vue的zindex
+
+app.vue
+
+```
+.mint-header{
+  z-index: 99;
+}
+```
+
+
+
+
+
+
+
+最终效果如图:
+
+![](./img/13.png)
+
+
+
+## 图片详情页
+
+1. 在改造 li 成 router-link 的时候，需要使用 tag 属性指定要渲染为 哪种元素
+创建PhotoInfo.vue组件
+
+
+```
+<template>
+    <div><h1>PhotoInfo.vue</h1></div>
+</template>
+<script>
+export default {
+    
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>
+
+
+
+```
+
+router.js引入PhotoList.vue组件
+
+```
+import PhotoInfo from './components/photos/PhotoInfo.vue'
+```
+
+```
+    { path: '/home/photoinfo/:id', component: PhotoInfo },
+
+```
+
+PhotoList.vue添加对应的路由跳转
+
+```
+<!-- 图片列表区域 -->
+    <ul class="photo-list">
+      <router-link v-for="item in list" :key="item.id" :to="'/home/photoinfo/' + item.id" tag="li">
+        <img v-lazy="item.img_url">
+        <div class="info">
+          <h1 class="info-title">{{ item.title }}</h1>
+          <div class="info-body">{{ item.zhaiyao }}</div>
+        </div>
+      </router-link>
+    </ul>
+
+```
+
+<font color=red>:to="'/home/photoinfo/' + item.id"</font>就是我们需要的链接
+这个时候的效果:
+![](./img/15.png)
+
+
+## 实现图片详情页面的布局和美化，同时获取数据渲染页面
+
+
+1. 图片详情页html结构
+
+```
+<div class="photoinfo-container">
+    <h3>图片标题</h3>
+    <p class="subtitle">
+      <span>发表时间:9-01-01 12:14:01</span>
+      <span>点击：100次</span>
+    </p>
+    <hr>
+     <!-- 图片内容区域 -->
+    <div class="content">
+      这是图片区域的内容
+    </div>
+  </div>   
+   
+```
+
+2. 获取图片详情页的数据
+
+```
+ data() {
+    return {
+      id: this.$route.params.id, // 从路由中获取到的 图片Id
+      photoinfo: {}, // 图片详情
+      list: [] // 缩略图的数组
+    };
+  },
+```
+
+```
+ getPhotoInfo() {
+      // 获取图片的详情
+      this.$http.get("api/getimageInfo/" + this.id).then(result => {
+        if (result.body.status === 0) {
+          this.photoinfo = result.body.message[0];
+        }
+      });
+    },
+```
+
+```
+created() {
+    this.getPhotoInfo();
+    this.getThumbs();
+  },
+```
+
+html渲染获取回来的数据
+
+```
+<template>
+  <div class="photoinfo-container">
+    <h3>{{ photoinfo.title }}</h3>
+    <p class="subtitle">
+      <span>发表时间：{{ photoinfo.add_time | dateFormat }}</span>
+      <span>点击：{{ photoinfo.click }}次</span>
+    </p>
+
+    <hr>
+
+    <!-- 缩略图区域 -->
+    <div class="thumbs">
+      <img class="preview-img" v-for="(item, index) in list" :src="item.src" height="100" @click="$preview.open(index, list)" :key="item.src">
+    </div>
+
+    <!-- 图片内容区域 -->
+    <div class="content" v-html="photoinfo.content"></div>
+
+    <!-- 放置一个现成的 评论子组件 -->
+    <cmt-box :id="id"></cmt-box>
+  </div>
+</template>
+```
+
+样式:
+
+```
+<style lang="scss" scoped>
+.photoinfo-container {
+  padding: 3px;
+  h3 {
+    color: #26a2ff;
+    font-size: 15px;
+    text-align: center;
+    margin: 15px 0;
+  }
+  .subtitle {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  .content {
+    font-size: 13px;
+    line-height: 30px;
+  }
+
+  .thumbs{
+    img{
+      margin: 10px;
+      box-shadow: 0 0 8px #999;
+    }
+  }
+}
+</style>
+```
+
+样式就不先不细说了
+
+### 图片详情页添加评论组件
+
+首先引入评论组件
+PhotoInfo.vue
+
+```
+// 1. 导入评论子组件
+import comment from "../subcomponents/comment.vue";
+```
+
+创建评论组件
+
+PhotoInfo.vue
+```
+ components: {
+    // 注册 评论子组件
+    "cmt-box": comment
+  }
+```
+
+在PhotoInfo.vue的页面中引入评论组件
+
+```
+<!-- 放置一个现成的 评论子组件 -->
+    <cmt-box :id="id"></cmt-box>
+```
+
+最终效果：
+
+
+![](./img/16.png)
+
+
+### 实现 图片详情中 缩略图的功能
+1. 使用 插件 vue-preview 这个缩略图插件
+2. 获取到所有的图片列表，然后使用 v-for 指令渲染数据
+3. 注意： img标签上的class不能去掉
+4. 注意： 每个 图片数据对象中，必须有 w 和 h 属性
+
+
+main.js引入vue-preview组件
+
+```
+// 安装 图片预览插件
+import VuePreview from 'vue-preview'
+Vue.use(VuePreview)
+```
+
+PhotoInfo.vue中添加vue-preview图片预览组件
+```
+ <!-- 缩略图区域 -->
+    <div class="thumbs">
+      <!-- <img class="preview-img" v-for="(item, index) in list" :src="item.src" height="100" @click="$preview.open(index, list)" :key="item.src"> -->
+      <vue-preview :slides="list" ></vue-preview>
+
+    </div>
+```
+
+获取缩略图，因为预览组件需要w,h属性，所以需要遍历图片然后加上w h 的属性
+
+```
+ getThumbs() {
+      // 获取缩略图
+      this.$http.get("api/getthumimages/" + this.id).then(result => {
+        if (result.body.status === 0) {
+          // 循环每个图片数据，补全图片的宽和高
+          result.body.message.forEach(item => {
+            item.w = 600;
+            item.h = 400;
+            item.msrc = item.src;
+          });
+          // 把完整的数据保存到 list 中
+          this.list = result.body.message;
+        }
+      });
+    }
+```
+缩略图数组:
+```
+ data() {
+    return {
+      id: this.$route.params.id, // 从路由中获取到的 图片Id
+      photoinfo: {}, // 图片详情
+      list: [] // 缩略图的数组
+    };
+  },
+```
+
+最终效果如图:
+
+![](./img/17.png)
+
+
+
+
+
+
+
+
 
 
 
