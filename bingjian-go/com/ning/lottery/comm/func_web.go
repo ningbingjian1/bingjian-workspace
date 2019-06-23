@@ -1,14 +1,14 @@
 package comm
 
 import (
-		"fmt"
+	"fmt"
 	"log"
-		"net/http"
+	"net/http"
 	"net/url"
 	"strconv"
 
-	"bingjian-go/com/ning/lottery/models"
 	"bingjian-go/com/ning/lottery/conf"
+	"bingjian-go/com/ning/lottery/models"
 	"net"
 )
 
