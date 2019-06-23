@@ -4,7 +4,6 @@
 
 1. 使用mint-ui的header组件
 
-
 1.1 首先使用mint-ui之前需要引入mint-ui的组件
 
 ```
@@ -182,7 +181,7 @@ SearchContainer.vue
   </div>
 </template>
 ```
- 
+
 
 ShopcarContainer.vue
 
@@ -1986,18 +1985,1626 @@ PhotoInfo.vue中添加vue-preview图片预览组件
 ![](./img/17.png)
 
 
+# 商品列表页面
+
+
+* 商品列表跳转制作
+  * 创建商品列表组件GoodsList.vue
+
+```
+  <template>
+    <div>
+        <h1>商品列表页面</h1>
+    </div>
+</template>
+<script>
+export default {
+    
+}
+</script>
+
+<style lang="sass" scoped>
+
+</style>
+
+```
+
+  * router.js配置路由导航
+
+  ```
+  import GoodsList from './components/goods/GoodsList.vue'
+  ```
+
+  ```
+      { path: '/home/goodslist', component: GoodsList },
+  ```
+
+  * 首页HomeContainer.vue配置跳转到商品列表页面
+
+  ```
+     <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+        <router-link to="/home/goodslist">
+          <img src="../../images/menu3.png" alt>
+          <div class="mui-media-body">商品购买</div>
+        </router-link>
+      </li>
+  ```
+  * 商品列表页面初步跳转显示完成
+
+
+![](./img/18.png)
+
+
+* 绘制商品列表页面
+  * html绘制
+
+```
+   <!-- 在网页中，有两种跳转方式： -->
+    <!-- 方式1： 使用 a 标签 的形式叫做 标签跳转  -->
+    <!-- 方式2： 使用 window.location.href 的形式，叫做 编程式导航 -->
+    <div class="goods-item" >
+      <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1559236033398&di=32301904d20cd9fae50e4044fc036290&imgtype=0&src=http%3A%2F%2Fimg003.hc360.cn%2Fm1%2FM01%2FE9%2FD4%2FwKhQb1RJmFuEcjmkAAAAAExCHG4129.jpg" alt="">
+      <h1 class="title">商品标题</h1>
+      <div class="info">
+        <p class="price">
+          <span class="now">￥ 3999</span>
+          <span class="old">￥ 2999</span>
+        </p>
+        <p class="sell">
+          <span>热卖中</span>
+          <span>剩 9999 件</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="goods-item" >
+      <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1559236033398&di=32301904d20cd9fae50e4044fc036290&imgtype=0&src=http%3A%2F%2Fimg003.hc360.cn%2Fm1%2FM01%2FE9%2FD4%2FwKhQb1RJmFuEcjmkAAAAAExCHG4129.jpg" alt="">
+      <h1 class="title">商品标题</h1>
+      <div class="info">
+        <p class="price">
+          <span class="now">￥ 3999</span>
+          <span class="old">￥ 2999</span>
+        </p>
+        <p class="sell">
+          <span>热卖中</span>
+          <span>剩 9999 件</span>
+        </p>
+      </div>
+    </div>
+
+
+    <div class="goods-item" >
+      <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1559236033398&di=32301904d20cd9fae50e4044fc036290&imgtype=0&src=http%3A%2F%2Fimg003.hc360.cn%2Fm1%2FM01%2FE9%2FD4%2FwKhQb1RJmFuEcjmkAAAAAExCHG4129.jpg" alt="">
+      <h1 class="title">商品标题</h1>
+      <div class="info">
+        <p class="price">
+          <span class="now">￥ 3999</span>
+          <span class="old">￥ 2999</span>
+        </p>
+        <p class="sell">
+          <span>热卖中</span>
+          <span>剩 9999 件</span>
+        </p>
+      </div>
+    </div>
+    <mt-button type="danger" size="large">加载更多</mt-button>
+  </div>
+
+
+```
+  * 效果图
+
+
+  ![](./img/19.png)
+
+
+  * css美化
+
+1. 列表的整体布局 
+
+```
+.goods-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 7px;
+  justify-content: space-between;
+
+}
+```
+
+flex:弹性布局
+
+flex-wrap: 子元素的换行模式  换行，第二行在第一行下面，从左到右
+
+padding:内容距离外部间距 
+
+justify-content:子元素的对齐方式
 
 
 
 
 
+商品的css样式:
+
+
+
+```
+
+<style lang="scss" scoped>
+.goods-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 7px;
+  justify-content: space-between;
+
+  .goods-item {
+    width: 49%;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 8px #ccc;
+    margin: 4px 0;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 293px;
+    img {
+      width: 100%;
+    }
+    .title {
+      font-size: 14px;
+    }
+
+    .info {
+      background-color: #eee;
+      p {
+        margin: 0;
+        padding: 5px;
+      }
+      .price {
+        .now {
+          color: red;
+          font-weight: bold;
+          font-size: 16px;
+        }
+        .old {
+          text-decoration: line-through;
+          font-size: 12px;
+          margin-left: 10px;
+        }
+      }
+      .sell {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+    }
+  }
+}
+```
+
+
+
+需要关注的：
+
+
+
+商品占用宽度的一半 这样一行可以显示两列
+
+```
+    width: 49%;
+
+```
+
+
+
+布局的方向是列方向弹性布局 这样上下对齐
+
+```
+flex-direction: column;
+```
+
+保证每个商品占用的高度一样
+
+```
+ min-height: 293px;
+```
+
+图片百分百填充
+
+```
+ width: 100%;
+```
 
 
 
 
 
+## 获取商品列表数据并渲染
 
 
+
+```
+ data() {
+    // data 是往自己组件内部，挂载一些私有数据的
+    return {
+      pageindex: 1, // 分页的页数
+      goodslist: [] // 存放商品列表的数组
+    };
+  },
+  created() {
+    this.getGoodsList();
+  },
+  methods: {
+    getGoodsList() {
+      // 获取商品列表
+      this.$http
+        .get("api/getgoods?pageindex=" + this.pageindex)
+        .then(result => {
+          if (result.body.status === 0) {
+            // this.goodslist = result.body.message;
+            this.goodslist = this.goodslist.concat(result.body.message);
+          }
+        });
+    },
+    getMore() {
+      this.pageindex++;
+      this.getGoodsList();
+    },
+    goDetail(id) {
+      // 使用JS的形式进行路由导航
+
+      // 注意： 一定要区分 this.$route 和 this.$router 这两个对象，
+      // 其中： this.$route 是路由【参数对象】，所有路由中的参数， params, query 都属于它
+      // 其中： this.$router 是一个路由【导航对象】，用它 可以方便的 使用 JS 代码，实现路由的 前进、后退、 跳转到新的 URL 地址
+
+      console.log(this);
+      // 1. 最简单的
+      // this.$router.push("/home/goodsinfo/" + id);
+      // 2. 传递对象
+      // this.$router.push({ path: "/home/goodsinfo/" + id });
+      // 3. 传递命名的路由
+      this.$router.push({ name: "goodsinfo", params: { id } });
+    }
+  }
+```
+
+
+
+说明:
+
+pageindex:保存的是页码
+
+goodslist:保存的是商品列表
+
+getGoodsList:方法是请求商品列表,在vue创建时期初始化商品列表，点击更多的时候请求商品列表，并追加到原来的商品列表
+
+```
+  getGoodsList() {
+      // 获取商品列表
+      this.$http
+        .get("api/getgoods?pageindex=" + this.pageindex)
+        .then(result => {
+          if (result.body.status === 0) {
+            // this.goodslist = result.body.message;
+            this.goodslist = this.goodslist.concat(result.body.message);
+          }
+        });
+    },
+```
+
+
+
+获取商品列表之后需要渲染:
+
+
+
+```
+<div class="goods-list">
+    <div class="goods-item" v-for="item in goodslist" :key="item.id" @click="goDetail(item.id)">
+      <img :src="item.img_url" alt="">
+      <h1 class="title">{{ item.title}}</h1>
+      <div class="info">
+        <p class="price">
+          <span class="now">{{ item.sell_price}}</span>
+          <span class="old">{{ item.market_price}}</span>
+        </p>
+        <p class="sell">
+          <span>热卖中</span>
+          <span>剩 9999 件</span>
+        </p>
+      </div>
+    </div>
+    <mt-button type="danger" size="large" @click="getMore">加载更多</mt-button>
+  </div>
+```
+
+
+
+
+
+点击获取更多
+
+```
+ getMore() {
+      this.pageindex++;
+      this.getGoodsList();
+    },
+```
+
+
+
+
+
+按钮也需要添加点击事件
+
+```
+<mt-button type="danger" size="large" @click="getMore">加载更多</mt-button>
+```
+
+
+
+
+
+# 商品详情页面
+
+
+
+## 创建商品详情页面的组件GoodsInfo.vue
+
+```
+<template>
+    <div>
+        <h1>商品详情页面</h1>
+    </div>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style lang="scss" scoped>
+
+</style>
+
+
+```
+
+router.js引入
+
+```
+import GoodsInfo from './components/goods/GoodsInfo.vue'
+```
+
+
+
+```
+  { path: '/home/goodsinfo/:id', component: GoodsInfo, name: 'goodsinfo' },
+```
+
+id是参数
+
+
+
+## 商品列表跳转商品详情页面
+
+
+
+在GoodsList.vue中定义的getDetails方法就是跳转商品详情页面的
+
+```
+  goDetail(id) {
+      // 使用JS的形式进行路由导航
+
+      // 注意： 一定要区分 this.$route 和 this.$router 这两个对象，
+      // 其中： this.$route 是路由【参数对象】，所有路由中的参数， params, query 都属于它
+      // 其中： this.$router 是一个路由【导航对象】，用它 可以方便的 使用 JS 代码，实现路由的 前进、后退、 跳转到新的 URL 地址
+
+      console.log(this);
+      // 1. 最简单的
+      // this.$router.push("/home/goodsinfo/" + id);
+      // 2. 传递对象
+      // this.$router.push({ path: "/home/goodsinfo/" + id });
+      // 3. 传递命名的路由
+      this.$router.push({ name: "goodsinfo", params: { id } });
+    }
+```
+
+注意这里的跳转使用的是编程式导航跳转
+
+```
+{ name: "goodsinfo", params: { id } }
+```
+
+name:是在router.js定义的name 
+
+```
+ { path: '/home/goodsinfo/:id', component: GoodsInfo, name: 'goodsinfo' },
+```
+
+点击跳转:
+
+```
+ <div class="goods-item" v-for="item in goodslist" :key="item.id" @click="goDetail(item.id)">
+```
+
+
+
+效果
+
+![](C:\work\github\bingjian-workspace\heima-web-39\vue\vue-cms\img\20.PNG)
+
+
+
+## 商品详情页面绘制
+
+
+
+使用mui-card的代码片段来绘制商品详情页面
+
+商品录播图区域
+
+```
+ 
+    <!-- 商品轮播图区域 -->
+    <div class="mui-card">
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner">
+          <swiper :lunbotuList="lunbotu" :isfull="false"></swiper>
+        </div>
+      </div>
+    </div>
+
+```
+
+商品购买区域
+
+````
+    <!-- 商品购买区域 -->
+    <div class="mui-card">
+      <div class="mui-card-header">{{ goodsinfo.title }}</div>
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner">
+          <p class="price">
+            市场价：<del>￥{{ goodsinfo.market_price }}</del>&nbsp;&nbsp;销售价：<span class="now_price">￥{{ goodsinfo.sell_price }}</span>
+          </p>
+          <p>购买数量：<numbox @getcount="getSelectedCount" :max="goodsinfo.stock_quantity"></numbox></p>
+          <p>
+            <mt-button type="primary" size="small">立即购买</mt-button>
+            <mt-button type="danger" size="small" @click="addToShopCar">加入购物车</mt-button>
+            <!-- 分析： 如何实现加入购物车时候，拿到 选择的数量 -->
+            <!-- 1. 经过分析发现： 按钮属于 goodsinfo 页面， 数字 属于 numberbox 组件 -->
+            <!-- 2. 由于涉及到了父子组件的嵌套了，所以，无法直接在 goodsinfo 页面zhong 中获取到 选中的商品数量值-->
+            <!-- 3. 怎么解决这个问题：涉及到了 子组件向父组件传值了（事件调用机制） -->
+            <!-- 4. 事件调用的本质： 父向子传递方法，子调用这个方法， 同时把 数据当作参数 传递给这个方法 -->
+          </p>
+        </div>
+      </div>
+    </div>
+````
+
+商品参数区域
+
+```
+    <!-- 商品参数区域 -->
+    <div class="mui-card">
+      <div class="mui-card-header">商品参数</div>
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner">
+          <p>商品货号：{{ goodsinfo.goods_no }}</p>
+          <p>库存情况：{{ goodsinfo.stock_quantity }}件</p>
+          <p>上架时间：{{ goodsinfo.add_time | dateFormat }}</p>
+        </div>
+      </div>
+      <div class="mui-card-footer">
+        <mt-button type="primary" size="large" plain @click="goDesc(id)">图文介绍</mt-button>
+        <mt-button type="danger" size="large" plain @click="goComment(id)">商品评论</mt-button>
+      </div>
+    </div>
+```
+
+
+
+### css美化
+
+
+
+```
+.goodsinfo-container {
+  background-color: #eee;
+  overflow: hidden;
+
+  .now_price {
+    color: red;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .mui-card-footer {
+    display: block;
+    button {
+      margin: 15px 0;
+    }
+  }
+
+  .ball {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: red;
+    position: absolute;
+    z-index: 99;
+    top: 390px;
+    left: 146px;
+  }
+}
+```
+
+
+
+获取录播图数据渲染
+
+```
+   getLunbotu() {
+      this.$http.get("api/getthumimages/" + this.id).then(result => {
+        if (result.body.status === 0) {
+          // 先循环轮播图数组的每一项，为 item 添加 img 属性，因为 轮播图 组件中，只认识 item.img， 不认识 item.src
+          result.body.message.forEach(item => {
+            item.img = item.src;
+          });
+          this.lunbotu = result.body.message;
+        }
+      });
+    },
+```
+
+渲染轮播图
+
+
+
+渲染轮播图需要先抽离出之前的轮播图组件，一个公共的轮播图组件
+
+```
+<template>
+  <div>
+    <mt-swipe :auto="4000">
+      <!-- 在组件中，使用v-for循环的话，一定要使用 key -->
+      <!-- 将来，谁使用此 轮播图组件，谁为我们传递 lunbotuList -->
+      <!-- 此时，lunbotuList 应该是 父组件向子组件传值来设置 -->
+      <mt-swipe-item v-for="item in lunbotuList" :key="item.url">
+        <img :src="item.img" alt="" :class="{'full': isfull}">
+      </mt-swipe-item>
+    </mt-swipe>
+  </div>
+
+  <!-- 分析：为什么 商品评论中的 轮播图那么丑： -->
+  <!-- 1. 首页中的图片，它的宽和高，都是 使用了 100% 的宽度 -->
+  <!-- 2. 在商品详情页面中，轮播图的 图片，如果也使用 宽高 为 100%的话，页面不好看 -->
+  <!-- 3. 商品详情页面中的轮播图，期望 高度是 100%， 但是 宽度为 自适应 -->
+  <!-- 4. 经过分析，得到 问题的原因： 首页中的轮播图 和 详情中的轮播图，分歧点是 宽度到底是 100% 还是 自适应 -->
+  <!-- 5. 既然这两个 轮播图，其它方面都是没有冲突的，只是 宽度有分歧， 那么，我们可以定义一个 属性，让 使用轮播图的 调用者，手动指定 是否为 100% 的宽度 -->
+
+</template>
+
+<script>
+export default {
+  props: ["lunbotuList", "isfull"]
+};
+</script>
+
+<style lang="scss" scoped>
+.mint-swipe {
+  height: 200px;
+
+  .mint-swipe-item {
+    text-align: center;
+
+    img {
+      // width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.full {
+  width: 100%;
+}
+</style>
+
+```
+
+需要绑定父组件的两个属性
+
+```
+"lunbotuList", "isfull"
+```
+
+lunbotuList:是轮播图的图片列表数据
+
+isfull:表示是否需要宽度百分百  首页需要百分百，但是商品详情页的宽度不需要百分百
+
+
+
+### 调整首页轮播图组件
+
+抽离轮播图组件之后我们重新调整首页的轮播图 HomeContainer.vue
+
+```
+import swiper from "../subcomponents/swiper.vue";
+```
+
+ 注册组轮播图组件
+
+```
+components: {
+    swiper
+  }
+```
+
+
+
+渲染轮播图组件
+
+```
+  <!-- 轮播图区域 -->
+    <swiper :lunbotuList="lunbotuList" :isfull="true"></swiper>
+```
+
+
+
+
+
+### 商品轮播图组件
+
+```
+ <!-- 商品轮播图区域 -->
+    <div class="mui-card">
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner">
+          <swiper :lunbotuList="lunbotu" :isfull="false"></swiper>
+        </div>
+      </div>
+    </div>
+```
+
+
+
+### 商品购买区域
+
+```
+
+
+    <!-- 商品购买区域 -->
+    <div class="mui-card">
+      <div class="mui-card-header">{{ goodsinfo.title }}</div>
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner">
+          <p class="price">
+            市场价：<del>￥{{ goodsinfo.market_price }}</del>&nbsp;&nbsp;销售价：<span class="now_price">￥{{ goodsinfo.sell_price }}</span>
+          </p>
+          <p>购买数量：<numbox @getcount="getSelectedCount" :max="goodsinfo.stock_quantity"></numbox></p>
+          <p>
+            <mt-button type="primary" size="small">立即购买</mt-button>
+            <mt-button type="danger" size="small" @click="addToShopCar">加入购物车</mt-button>
+            <!-- 分析： 如何实现加入购物车时候，拿到 选择的数量 -->
+            <!-- 1. 经过分析发现： 按钮属于 goodsinfo 页面， 数字 属于 numberbox 组件 -->
+            <!-- 2. 由于涉及到了父子组件的嵌套了，所以，无法直接在 goodsinfo 页面zhong 中获取到 选中的商品数量值-->
+            <!-- 3. 怎么解决这个问题：涉及到了 子组件向父组件传值了（事件调用机制） -->
+            <!-- 4. 事件调用的本质： 父向子传递方法，子调用这个方法， 同时把 数据当作参数 传递给这个方法 -->
+          </p>
+        </div>
+      </div>
+    </div>
+
+```
+
+
+
+购买数量组件 goodsinfo_numbox.vue
+
+```
+<template>
+<!-- 问题： 我们不知道什么时候能够拿到 max 值，但是，总归有一刻，会得到一个真正的 max 值 -->
+<!-- 我们可以 使用 watch 属性监听，来 监听 父组件传递过来的 max 值，不管 watch 会被触发几次，但是，最后一次，肯定是一个 合法的 max 数值 -->
+  <div class="mui-numbox" data-numbox-min='1'>
+    <button class="mui-btn mui-btn-numbox-minus" type="button">-</button>
+    <input id="test" class="mui-input-numbox" type="number" value="1" @change="countChanged" ref="numbox" />
+    <button class="mui-btn mui-btn-numbox-plus" type="button">+</button>
+  </div>
+
+  <!-- 分析： 子组件什么时候把 数据传递给父组件 -->
+  <!--  -->
+</template>
+
+<script>
+import mui from "../../lib/mui/js/mui.min.js";
+
+export default {
+  mounted() {
+    // 初始化数字选择框组件
+    mui(".mui-numbox").numbox();
+    console.log(this.max);
+  },
+  methods: {
+    countChanged() {
+      // 每当 文本框的数据被修改的时候，立即把 最新的数据，通过事件调用，传递给父组件
+      // console.log(this.$refs.numbox.value);
+      this.$emit("getcount", parseInt(this.$refs.numbox.value));
+    }
+  },
+  props: ["max"],
+  watch: {
+    // 属性监听
+    max: function(newVal, oldVal) {
+      // 使用 JS API 设置 numbox 的最大值
+      mui(".mui-numbox")
+        .numbox()
+        .setOption("max", newVal);
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+
+</style>
+
+```
+
+
+
+
+
+初始化numbox组件
+
+```
+import mui from "../../lib/mui/js/mui.min.js";
+
+
+  mounted() {
+    // 初始化数字选择框组件
+    mui(".mui-numbox").numbox();
+    console.log(this.max);
+  },
+```
+
+
+
+绑定父组件属性max
+
+```
+ props: ["max"],
+```
+
+
+
+监听max属性
+
+```
+ watch: {
+    // 属性监听
+    max: function(newVal, oldVal) {
+      // 使用 JS API 设置 numbox 的最大值
+      mui(".mui-numbox")
+        .numbox()
+        .setOption("max", newVal);
+    }
+  }
+```
+
+如果max属性监听到变化就重新设置numbox的最大值
+
+
+
+购买数量输入框的变化事件
+
+```
+
+<input id="test" class="mui-input-numbox" type="number" value="1" @change="countChanged" ref="numbox" />
+
+```
+
+调用父组件的getCount方法
+
+```
+ methods: {
+    countChanged() {
+      // 每当 文本框的数据被修改的时候，立即把 最新的数据，通过事件调用，传递给父组件
+      // console.log(this.$refs.numbox.value);
+      this.$emit("getcount", parseInt(this.$refs.numbox.value));
+    }
+  },
+```
+
+
+
+父组件GoodsInfo.vue组件引入数量框组件
+
+```
+// 导入 数字选择框 组件
+import numbox from "../subcomponents/goodsinfo_numbox.vue";
+```
+
+
+
+使用:
+
+```
+  <p>购买数量：<numbox @getcount="getSelectedCount" :max="goodsinfo.stock_quantity"></numbox></p>
+
+```
+
+### 商品参数区域
+
+
+
+```
+ <!-- 商品参数区域 -->
+    <div class="mui-card">
+      <div class="mui-card-header">商品参数</div>
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner">
+          <p>商品货号：{{ goodsinfo.goods_no }}</p>
+          <p>库存情况：{{ goodsinfo.stock_quantity }}件</p>
+          <p>上架时间：{{ goodsinfo.add_time | dateFormat }}</p>
+        </div>
+      </div>
+```
+
+
+
+### 图文介绍和商品评论
+
+````
+      <div class="mui-card-footer">
+        <mt-button type="primary" size="large" plain @click="goDesc(id)">图文介绍</mt-button>
+        <mt-button type="danger" size="large" plain @click="goComment(id)">商品评论</mt-button>
+      </div>
+````
+
+
+
+
+
+#### 图文介绍
+
+```
+ goDesc(id) {
+      // 点击使用编程式导航跳转到 图文介绍页面
+      this.$router.push({ name: "goodsdesc", params: { id } });
+    },
+```
+
+创建图文介绍组件GoodsDesc.vue
+
+```
+<template>
+  <div class="goodsdesc-container">
+    <h3>{{ info.title }}</h3>
+
+    <hr>
+
+    <div class="content" v-html="info.content"></div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      info: {} // 图文数据
+    };
+  },
+  created() {
+    this.getGoodsDesc();
+  },
+  methods: {
+    getGoodsDesc() {
+      this.$http
+        .get("api/goods/getdesc/" + this.$route.params.id)
+        .then(result => {
+          if (result.body.status === 0) {
+            this.info = result.body.message[0];
+          }
+        });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.goodsdesc-container {
+  padding: 4px;
+  h3 {
+    font-size: 16px;
+    color: #226aff;
+    text-align: center;
+    margin: 15px 0;
+  }
+  .content{
+    img{
+      width: 100%;
+    }
+  }
+}
+</style>
+
+```
+
+
+
+#### 商品评论
+
+```
+goComment(id) {
+      // 点击跳转到 评论页面
+      this.$router.push({ name: "goodscomment", params: { id } });
+    },
+```
+
+创建商品品论组件，之前已经抽离好商品评论组件直接使用就好了
+
+GoodsComment.vue
+
+```
+<template>
+  <div>
+    <cmtbox :id="$route.params.id"></cmtbox>
+  </div>
+</template>
+
+<script>
+import cmtbox from "../subcomponents/comment.vue";
+
+export default {
+  components: {
+    cmtbox
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+
+</style>
+
+```
+
+
+
+# 加入购物车功能
+
+## 加入vuex组件
+
+```
+npm install vuex
+```
+main.js添加:
+
+```
+//注册vuex
+import Vuex from 'vuex'
+Vue.use(Vuex)
+var store = new Vuex.Store({
+  state:{
+    car:[]
+  }
+})
+```
+
+```
+var vm = new Vue({
+  el: '#app',
+  render: c => c(app),
+  router, // 1.4 挂载路由对象到 VM 实例上
+  store // 挂载 store 状态管理对象
+})
+```
+
+store就是vuex用来管理对象的
+
+
+## 点击加入购物车的功能
+
+这里主要涉及几个要点：
+1. 加入store的购物车
+2. 本地存储持久化购物车的内容，方便在刷新之后重新渲染购物车的内容
+
+需要在store中添加mutations:
+```
+  addToCar(state,goodsinfo){
+      var flag = false;
+      state.car.some(item =>{
+        if(item.id == goodsinfo.id){
+          item.count += parseInt(goodsinfo.count)
+          flag = true ;
+          return true ;
+
+        }
+      })
+      if(!flag){
+        state.car.push(goodsinfo)
+      }
+      localStorage.setItem('car',JSON.stringify(state.car))
+    }
+```
+然后在goodsInfo.vue添加加入购物的点击事件
+```
+    addToShopCar() {
+      // 添加到购物车
+      this.ballFlag = !this.ballFlag;
+      // { id:商品的id, count: 要购买的数量, price: 商品的单价，selected: false  }
+      // 拼接出一个，要保存到 store 中 car 数组里的 商品信息对象
+      var goodsinfo = {
+        id: this.id,
+        count: this.selectedCount,
+        price: this.goodsinfo.sell_price,
+        selected: true
+      };
+      // 调用 store 中的 mutations 来将商品加入购物车
+      this.$store.commit("addToCar", goodsinfo);
+    },
+```
+
+## 实现微标的数值自动更新
+
+首先我们需要在store中定义个getter方法用来获取store中car的物品数量
+
+main.js中store中添加getters方法:
+
+
+```
+  getters:{
+     getAllCount(state){
+       var c = 0 ;
+       state.car.forEach(item =>{
+         c += item.count
+       })
+       return c;
+     }
+   }
+```
+
+然后在App.vue中获取商品数量
+
+```
+		<router-link class="mui-tab-item-llb" to="/shopcar">
+				<span class="mui-icon mui-icon-extra mui-icon-extra-cart">
+					<span class="mui-badge">{{ $store.getters.getAllCount}}</span>
+				</span>
+				<span class="mui-tab-label" id="badge">购物车</span>
+			</router-link>
+```
+
+## 利用本地持久化保持购物车数据
+
+刷新的时候发现购物车的数据又重新变为0了，所以我们可以利用本地持久化来保存购物车的数据，启动项目的
+时候先从本地存储获取购物车数据来渲染
+main.js中启动读取本地存储
+
+```
+//注册vuex
+import Vuex from 'vuex'
+Vue.use(Vuex)
+var car = JSON.parse(localStorage.getItem('car')||[])
+```
+
+在store中设置car为本地存储的car
+```
+Vue.use(Vuex)
+var car = JSON.parse(localStorage.getItem('car')||[])
+var store = new Vuex.Store({
+  state:{
+    car:car
+  },
+
+  ...其他代码
+```
+
+这样刷新就不会丢失为购物车的数据了
+
+
+
+
+## 购物车图片商品列表页面的布局
+
+分为商品列表区域和商品结算区域
+
+![](./img/21.png)
+
+ShopcarContainer.vue
+
+html代码
+```
+<template>
+  <div class="shopcar-container">
+
+    <!-- 商品列表区域 -->
+    <div class="goods-list">
+      <div class="mui-card">
+        <div class="mui-card-content">
+          <div class="mui-card-content-inner">
+              <mt-switch>
+
+              </mt-switch>
+              <img src="">
+              <div class="info">
+                <h1>商品标题</h1>
+                <p>
+                  <span class="price">￥10000</span>
+                  <numbox :initcount="0"></numbox>
+                  <!-- 问题：如何从购物车中获取商品的数量呢 -->
+                  <!-- 1. 我们可以先创建一个 空对象，然后循环购物车中所有商品的数据， 把 当前循环这条商品的 Id， 作为 对象 的 属性名，count值作为 对象的 属性值，这样，当把所有的商品循环一遍，就会得到一个对象： { 88: 2, 89: 1, 90: 4 } -->
+                  <a href="#" @click.prevent="remove(item.id, i)">删除</a>
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <div class="goods-list">
+      <div class="mui-card">
+        <div class="mui-card-content">
+          <div class="mui-card-content-inner">
+              <mt-switch>
+
+              </mt-switch>
+              <img src="">
+              <div class="info">
+                <h1>商品标题</h1>
+                <p>
+                  <span class="price">￥10000</span>
+                  <numbox :initcount="0"></numbox>
+                  <!-- 问题：如何从购物车中获取商品的数量呢 -->
+                  <!-- 1. 我们可以先创建一个 空对象，然后循环购物车中所有商品的数据， 把 当前循环这条商品的 Id， 作为 对象 的 属性名，count值作为 对象的 属性值，这样，当把所有的商品循环一遍，就会得到一个对象： { 88: 2, 89: 1, 90: 4 } -->
+                  <a href="#" @click.prevent="remove(item.id, i)">删除</a>
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- 商品结算区域 -->
+
+    <!-- 结算区域 -->
+    <div class="mui-card">
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner jiesuan">
+          <div class="left">
+            <p>总计（不含运费）</p>
+            <p>
+              已勾选商品
+              <span class="red">000</span> 件， 总价
+              <span class="red">111111</span>
+            </p>
+          </div>
+          <mt-button type="danger">去结算</mt-button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+```
+css代码:
+```
+
+<style lang="scss" scoped>
+.shopcar-container {
+  background-color: #eee;
+  overflow: hidden;
+  .goods-list {
+    .mui-card-content-inner {
+      display: flex;
+      align-items: center;
+    }
+    img {
+      width: 60px;
+    }
+    h1 {
+      font-size: 13px;
+    }
+    .info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .price {
+        color: red;
+        font-weight: bold;
+      }
+    }
+  }
+  .jiesuan {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .red {
+      color: red;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
+}
+</style>
+```
+
+用到了一个组件numbox
+
+```
+import numbox from "../subcomponents/shopcar_numbox.vue";
+
+export default {
+  data() {
+    return {
+      goodslist: [] // 购物车中所有商品的数据
+    };
+  },
+  created() {
+  },
+  methods: {
+   
+  },
+  components: {
+    numbox
+  }
+};
+```
+
+numbox组件的代码subcompoonents/shopcar_numbox.vue
+```
+<template>
+  <div class="mui-numbox" data-numbox-min='1' style="height:25px;">
+    <button class="mui-btn mui-btn-numbox-minus" type="button">-</button>
+    <input id="test" class="mui-input-numbox" type="number" :value="initcount" @change="countChanged" ref="numbox" readonly />
+    <button class="mui-btn mui-btn-numbox-plus" type="button">+</button>
+  </div>
+
+  <!-- 分析： 子组件什么时候把 数据传递给父组件 -->
+  <!--  -->
+</template>
+
+<script>
+import mui from "../../lib/mui/js/mui.min.js";
+
+export default {
+  mounted() {
+    // 初始化数字选择框组件
+    mui(".mui-numbox").numbox();
+  },
+  methods: {
+    countChanged() {
+      // 数量改变了
+      // console.log(this.$refs.numbox.value);
+      // 每当数量值改变，则立即把最新的数量同步到 购物车的  store 中，覆盖之前的数量值
+      this.$store.commit("updateGoodsInfo", {
+        id: this.goodsid,
+        count: this.$refs.numbox.value
+      });
+    }
+  },
+  props: ["initcount", "goodsid"]
+};
+</script>
+
+<style lang="scss" scoped>
+
+</style>
+
+```
+
+需要绑定父组件的两个属性，初始化的数量initcount,商品id goodsid
+
+## 获取购物车所有的商品列表并显示
+
+我们需要从store获取所有的商品ID，然后请求后台返回所有的商品列表
+
+ShopcarContainer.vue
+```
+   getGoodsList() {
+      // 1. 获取到 store 中所有的商品的Id，然后拼接出一个 用逗号分隔的 字符串
+      var idArr = [];
+      this.$store.state.car.forEach(item => idArr.push(item.id));
+      // 如果 购物车中没有商品，则直接返回，不需要请求数据接口，否则会报错
+      if (idArr.length <= 0) {
+        return;
+      }
+      // 获取购物车商品列表
+      this.$http
+        .get("api/goods/getshopcarlist/" + idArr.join(","))
+        .then(result => {
+          if (result.body.status === 0) {
+            this.goodslist = result.body.message;
+          }
+        });
+    },
+```
+在组件创建完成之后调用
+```
+created() {
+    this.getGoodsList();
+  },
+```
+
+html中遍历商品列表
+```
+    <!-- 商品列表区域 -->
+    <div class="goods-list">
+      <div class="mui-card" v-for="(item,i) in goodslist" :key="item.id">
+        <div class="mui-card-content">
+          <div class="mui-card-content-inner">
+              <mt-switch></mt-switch>
+              <img src="">
+              <div class="info">
+                <h1>{{ item.title }}</h1>
+                <p>
+                  <span class="price">￥{{ item.sell_price }}</span>
+                  <numbox :initcount="0"></numbox>
+                  <!-- 问题：如何从购物车中获取商品的数量呢 -->
+                  <!-- 1. 我们可以先创建一个 空对象，然后循环购物车中所有商品的数据， 把 当前循环这条商品的 Id， 作为 对象 的 属性名，count值作为 对象的 属性值，这样，当把所有的商品循环一遍，就会得到一个对象： { 88: 2, 89: 1, 90: 4 } -->
+                  <a href="#" @click.prevent="remove(item.id, i)">删除</a>
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+```
+
+## 循坏购物车列表初始化数量值
+需要在store中获取商品的数量
+main.js中的store添加getters
+```
+ getGoodsCount(state) {
+      var o = {}
+      state.car.forEach(item => {
+        o[item.id] = item.count
+      })
+      return o
+    },
+```
+返回的是一个map,对应商品ID和商品数量
+在numbox中绑定initcout的属性
+
+ShopcarContainer.vue
+```
+ <numbox :initcount="$store.getters.getGoodsCount[item.id]"></numbox>
+```
+## 购物车数量的变化同步到store中
+首先我们需要在store添加updateGoodsInfo方法更新store中的购物车状态
+main.js store的mutations
+
+```
+    updateGoodsInfo(state, goodsinfo) {
+      // 修改购物车中商品的数量值
+      // 分析： 
+      state.car.some(item => {
+        if (item.id == goodsinfo.id) {
+          item.count = parseInt(goodsinfo.count)
+          return true
+        }
+      })
+      // 当修改完商品的数量，把最新的购物车数据，保存到 本地存储中
+      localStorage.setItem('car', JSON.stringify(state.car))
+    },
+```
+然后在ShopcarContainer.vue中添加更新购物车状态的事件,由于数值变化是在子组价numbox中，所以我们在shopcar_numbox.vue添加更新数值的更新事件
+
+shopcar_numbox.vue
+
+```
+  countChanged() {
+      // 数量改变了
+      // console.log(this.$refs.numbox.value);
+      // 每当数量值改变，则立即把最新的数量同步到 购物车的  store 中，覆盖之前的数量值
+      this.$store.commit("updateGoodsInfo", {
+        id: this.goodsid,
+        count: this.$refs.numbox.value
+      });
+    }
+  },
+```
+mui-numbox组件添加改变事件
+```
+ @change="countChanged"
+```
+
+
+注意这里的goodsid是从父组件绑定过来的属性,在ShopcarContainer.vue中
+```
+ <numbox :initcount="$store.getters.getGoodsCount[item.id]"  :goodsid="item.id"></numbox>
+
+```
+
+## 删除购物车商品功能
+
+在store中添加删除的mutations
+```
+ removeFormCar(state, id) {
+      // 根据Id，从store 中的购物车中删除对应的那条商品数据
+      state.car.some((item, i) => {
+        if (item.id == id) {
+          state.car.splice(i, 1)
+          return true;
+        }
+      })
+      // 将删除完毕后的，最新的购物车数据，同步到 本地存储中
+      localStorage.setItem('car', JSON.stringify(state.car))
+    },
+```
+在ShopcarContainer.vue中添加删除事件
+method
+```
+ remove(id, index) {
+      // 点击删除，把商品从 store 中根据 传递的 Id 删除，同时，把 当前组件中的 goodslist 中，对应要删除的那个商品，使用 index 来删除
+      this.goodslist.splice(index, 1);
+      this.$store.commit("removeFormCar", id);
+    },
+```
+事件:
+```
+ <a href="#" @click.prevent="remove(item.id, i)">删除</a>
+```
+
+
+## store选中状态同步到页面
+
+store中添加查询选中状态的mutations
+
+main.js
+
+```
+  getGoodsSelected(state) {
+      var o = {}
+      state.car.forEach(item => {
+        o[item.id] = item.selected
+      })
+      return o
+    },
+```
+
+然后需要在ShopcarContainer.vue中的mt-switch组件添加v-model
+
+```
+  <mt-switch
+              v-model="$store.getters.getGoodsSelected[item.id]"
+              @change="selectedChanged(item.id, $store.getters.getGoodsSelected[item.id])"
+            ></mt-switch>
+```
+
+对于修改选中状态我们也需要更新到store中，所以需要给mt-switch添加change事件
+
+```
+  <mt-switch
+              v-model="$store.getters.getGoodsSelected[item.id]"
+              @change="selectedChanged(item.id, $store.getters.getGoodsSelected[item.id])"
+            ></mt-switch>
+```
+
+
+在store中添加更新选中状态的mutations
+
+```
+ updateGoodsSelected(state, info) {
+      state.car.some(item => {
+        if (item.id == info.id) {
+          item.selected = info.selected
+        }
+      })
+      // 把最新的 所有购物车商品的状态保存到 store 中去
+      localStorage.setItem('car', JSON.stringify(state.car))
+    }
+  },
+```
+
+然后在ShopcarContainer.vue添加method
+```
+selectedChanged(id, val) {
+      // 每当点击开关，把最新的 快关状态，同步到 store 中
+      // console.log(id + " --- " + val);
+      this.$store.commit("updateGoodsSelected", { id, selected: val });
+    }
+```
+
+## 结算区域数量和总价计算
+store中添加getter方法
+main.js
+
+
+getGoodsCountAndAmount
+```
+  getGoodsCountAndAmount(state) {
+      var o = {
+        count: 0, // 勾选的数量
+        amount: 0 // 勾选的总价
+      }
+      state.car.forEach(item => {
+        if (item.selected) {
+          o.count += item.count
+          o.amount += item.price * item.count
+        }
+      })
+      return o
+    }
+```
+
+在ShopcarContainer.vue
+```
+   <!-- 结算区域 -->
+    <div class="mui-card">
+      <div class="mui-card-content">
+        <div class="mui-card-content-inner jiesuan">
+          <div class="left">
+            <p>总计（不含运费）</p>
+            <p>
+              已勾选商品
+              <span class="red">{{ $store.getters.getGoodsCountAndAmount.count }}</span> 件， 总价
+              <span class="red">￥{{ $store.getters.getGoodsCountAndAmount.amount }}</span>
+            </p>
+          </div>
+          <mt-button type="danger">去结算</mt-button>
+        </div>
+      </div>
+    </div>
+```
+
+## 实现返回功能
+
+
+在App.vue头部添加返回的按钮
+
+```
+<!-- 顶部 Header 区域 -->
+    <mt-header fixed title="黑马程序员·Vue项目">
+      <span slot="left" @click="goBack" v-show="flag">
+        <mt-button icon="back">返回</mt-button>
+      </span>
+    </mt-header>
+```
+
+```
+ <mt-button icon="back">返回</mt-button>
+```
+
+然后添加method:
+```
+ goBack() {
+      // 点击后退
+      this.$router.go(-1);
+    }
+```
+
+
+其他需要关注的地方:
+```
+export default {
+  data() {
+    return {
+      flag: false
+    };
+  },
+  created() {
+    this.flag = this.$route.path === "/home" ? false : true;
+  },
+  methods: {
+    goBack() {
+      // 点击后退
+      this.$router.go(-1);
+    }
+  },
+  watch: {
+    "$route.path": function(newVal) {
+      if (newVal === "/home") {
+        this.flag = false;
+      } else {
+        this.flag = true;
+      }
+    }
+  }
+};
+```
+1. 在创建的时候判断当前的路径如果是家目录就不显示返回按钮
+2. 监听当前的路径变化，如果不是/home路径就设置显示返回按钮
 
 
 
